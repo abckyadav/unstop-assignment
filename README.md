@@ -1,3 +1,11 @@
+# Unstop Assignment
+
+- Frontend deployed link: https://unstop-assignment-nu.vercel.app//
+- Backend deployed link: https://unstop-backend-api.onrender.com/
+- github repository: link: https://github.com/abckyadav/unstop-assignment
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
