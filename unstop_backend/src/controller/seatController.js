@@ -73,7 +73,7 @@ const bookSeats = async (req, res) => {
         bookedSeats.push(seatsAvailableInOneRow[i].seatNo);
       }
       console.log("seatsAvailableInOneRow:", bookedSeats);
-      return res.status(200).json({ booked: seatsAvailableInOneRow });
+      return res.status(200).json({ booked: bookedSeats });
     } else {
       let bookedSeats = [];
       let nearestSeats = [];
@@ -102,7 +102,7 @@ const bookSeats = async (req, res) => {
         bookedSeats.push(nearestSeats[i].seatNo);
       }
       console.log("nearestSeats:", bookedSeats);
-      return res.status(200).json({ booked: nearestSeats });
+      return res.status(200).json({ booked: bookedSeats });
     }
   } catch (error) {
     console.log("error", error.message);
