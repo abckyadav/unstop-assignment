@@ -3,40 +3,35 @@ import {
   Grid,
   TextField,
   Button,
-  IconButton,
-  Typography,
   Snackbar,
+  Typography,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 
+import MuiAlert from "@mui/material/Alert";
 import axios from "axios";
 import Cards from "./Cards";
 import "./style.css";
-
 const Home = () => {
   const [allSeats, setAllSeats] = useState([]);
   const [bookedSeats, setBookedSeats] = useState([]);
   const [inputValue, setInputValue] = useState("");
+  const [severity, setSeverity] = useState("");
   const [load, setLoad] = useState(false);
-  const [load2, setLoad2] = useState(false);
   const [message, setMessage] = useState("");
   const [open, setOpen] = React.useState(false);
 
-  const action = (
-    <React.Fragment>
-      <IconButton size="small" aria-label="close" color="inherit"></IconButton>
-    </React.Fragment>
-  );
-
   // For fetching all seats details.
   let getAllSeats = async () => {
-    setLoad2(true);
+    setLoad(true);
     try {
       let res = await axios.get(`https://unstop-backend-api.onrender.com/`);
-      setLoad2(false);
-      console.log("res.data.allSeats:", res.data.allSeats);
+      setLoad(false);
       setAllSeats(res.data.allSeats);
     } catch (error) {
       console.log(error);
+      handleToast(error, "error");
     }
   };
 
@@ -45,8 +40,8 @@ const Home = () => {
     setInputValue(e.target.value);
 
     if (e.target.value < 1 || e.target.value > 7) {
-      setOpen(true);
-      setMessage("Please enter valid number between 1 and 7");
+      handleToast("Please enter valid number between 1 and 7", "error");
+      setInputValue("");
     }
   };
 
@@ -56,10 +51,10 @@ const Home = () => {
     setLoad(true);
     try {
       if (inputValue === "" || +inputValue < 1) {
-        console.log("Please enter valid Number");
         setLoad(false);
+        handleToast("Please enter valid Number", "error");
       } else if (+inputValue > 7) {
-        console.log("Please enter lestt than 7");
+        handleToast("Please enter less than 7", "error");
       } else {
         let res = await axios.patch(
           `https://unstop-backend-api.onrender.com/seats`,
@@ -67,48 +62,58 @@ const Home = () => {
         );
         if (!res.data.booked) {
           setLoad(false);
-          setMessage(res.data.message);
-          console.log("res.data.message:", res.data.message);
+          handleToast(res.data.message, "error");
         } else {
           setBookedSeats(res.data.booked);
           getAllSeats();
           setLoad(false);
           setInputValue("");
+          handleToast("Booked Successfully", "success");
         }
       }
     } catch (error) {
-      setMessage(error.response.data.message);
-      console.log(error.response.data.message);
+      handleToast(error.response.data.message, "error");
     }
   };
   // For reseting all seats.
   let resetAllSeats = async () => {
-    setLoad2(true);
+    setLoad(true);
     try {
       await axios.patch(`https://unstop-backend-api.onrender.com/reset`);
 
       getAllSeats();
       setInputValue("");
       setBookedSeats([]);
+      handleToast("all seats has been reset", "success");
     } catch (error) {
-      console.log(error);
+      handleToast(error, "error");
     }
+  };
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
+  const handleToast = (msg, severity) => {
+    setOpen(true);
+    setMessage(msg);
+    setSeverity(severity);
   };
 
   useEffect(() => {
     getAllSeats();
-  }, [bookedSeats]);
+  }, []);
   console.log("bookedSeats", bookedSeats, message);
 
   return (
     <div className="root">
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        message={message}
-        action={action}
-      />
-
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} className="leftPanel">
           <div className="heading">
@@ -125,6 +130,8 @@ const Home = () => {
                 value={inputValue}
                 type="number"
                 required
+                min="1"
+                max="7"
               />
             </Grid>
             <Grid item container xs={12} className="controls">
@@ -182,6 +189,22 @@ const Home = () => {
             ))}
           </div>
         </Grid>
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+          <Alert
+            onClose={handleClose}
+            severity={severity}
+            sx={{ width: "100%" }}
+          >
+            {message}
+          </Alert>
+        </Snackbar>
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={load}
+          onClick={handleClose}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Grid>
     </div>
   );
