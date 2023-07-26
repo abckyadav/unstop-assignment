@@ -31,6 +31,7 @@ const Home = () => {
       setAllSeats(res.data.allSeats);
     } catch (error) {
       console.log(error);
+      setLoad(false);
       handleToast(error, "error");
     }
   };
@@ -72,6 +73,7 @@ const Home = () => {
         }
       }
     } catch (error) {
+      setLoad(false);
       handleToast(error.response.data.message, "error");
     }
   };
@@ -102,6 +104,7 @@ const Home = () => {
   });
 
   const handleToast = (msg, severity) => {
+    setLoad(false);
     setOpen(true);
     setMessage(msg);
     setSeverity(severity);
