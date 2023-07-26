@@ -117,7 +117,7 @@ const Home = () => {
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} className="leftPanel">
           <div className="heading">
-            <Typography variant="h4">Ticket Booing App</Typography>
+            <Typography variant="h4">Ticket Booking App</Typography>
           </div>
 
           <Grid container xs={12} className="controls">
