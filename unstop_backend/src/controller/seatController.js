@@ -2,7 +2,8 @@ const SeatModel = require("../models/seatModel");
 
 const getAllSeats = async (req, res) => {
   try {
-    const allSeats = await SeatModel.find();
+    const allSeats = await SeatModel.find().sort({ seatNo: 1 });
+    console.log("allSeats:", allSeats);
 
     return res.status(200).json({ allSeats: allSeats });
   } catch (error) {
